@@ -1,0 +1,202 @@
+diff -up freewrl-4.3.0-20190827git36b721c/src/message/main.c.memcpy freewrl-4.3.0-20190827git36b721c/src/message/main.c
+--- freewrl-4.3.0-20190827git36b721c/src/message/main.c.memcpy	2020-01-13 10:10:49.218160420 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/message/main.c	2020-01-13 10:11:15.681769556 -0500
+@@ -52,9 +52,9 @@ void dismiss_proc (Widget w, XtPointer c
+ int main(int argc, char **argv) {
+ 
+ 	if (argc > 1) {
+-		strncpy (inLine,argv[1],strlen(argv[1]));
++		memcpy (inLine,argv[1],strlen(argv[1]));
+ 	} else {
+-		strncpy (inLine,MESG,strlen(MESG));
++		memcpy (inLine,MESG,strlen(MESG));
+ 	}
+ 
+ 	/* Create the application shell widget */
+diff -up freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Field.c.strncpy freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Field.c
+--- freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Field.c.strncpy	2020-01-13 10:28:22.485683271 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Field.c	2020-01-13 10:28:47.717313168 -0500
+@@ -262,7 +262,7 @@ X3DNode *X3D_newSFString(char* string) {
+ 	retval->X3D_SFString.type = FIELDTYPE_SFString;
+ 	retval->X3D_SFString.len = strlen(string);
+ 	retval->X3D_SFString.strptr = malloc((strlen(string) + 1)*sizeof(char));
+-	strncpy(retval->X3D_SFString.strptr, string, strlen(string));
++	memcpy(retval->X3D_SFString.strptr, string, strlen(string));
+ 	retval->X3D_SFString.strptr[strlen(string)] = '\0';
+ 	return retval;
+ }
+@@ -272,7 +272,7 @@ char* X3D_getSFString(X3DNode* node) {
+ 	if (node->type != FIELDTYPE_SFString)
+ 		return 0;
+ 	string = malloc((node->X3D_SFString.len + 1)*sizeof(char));
+-	strncpy(string, node->X3D_SFString.strptr, node->X3D_SFString.len);
++	memcpy(string, node->X3D_SFString.strptr, node->X3D_SFString.len);
+ 	string[node->X3D_SFString.len] = '\0';
+ 	return string;
+ }
+@@ -610,7 +610,7 @@ X3DNode *X3D_newMFString(int num, char a
+ 		retval->X3D_MFString.p[i].type = FIELDTYPE_SFString; /*based on pattern above ie vec3f this should be SF */
+ 		retval->X3D_MFString.p[i].len = strlen(array[i]);
+ 		retval->X3D_MFString.p[i].strptr = malloc(sizeof(char)*STRLEN);
+-		strncpy(retval->X3D_MFString.p[i].strptr, array[i], STRLEN);
++		memcpy(retval->X3D_MFString.p[i].strptr, array[i], STRLEN);
+ 	}
+ 
+ 	return retval;
+@@ -630,7 +630,7 @@ void X3D_getMFString(X3DNode* node, char
+ 
+ 	for (i = 0; i < node->X3D_MFString.n; i++) {
+ 		(*array)[i] = (*array)[0] + (i*256);
+-		strncpy((*array)[i], node->X3D_MFString.p[i].strptr, STRLEN);
++		memcpy((*array)[i], node->X3D_MFString.p[i].strptr, STRLEN);
+ 	}
+ }
+ 
+diff -up freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Node.c.strncpy freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Node.c
+--- freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Node.c.strncpy	2020-01-13 10:28:59.749136682 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Node.c	2020-01-13 10:29:20.156837332 -0500
+@@ -493,7 +493,7 @@ X3DNode* X3D_getValue (X3DEventOut *src)
+ 			tstring[len] = '\0';
+ 
+ 			value->X3D_SFString.strptr = malloc ((strlen(tstring)+1) * sizeof(char));
+-			strncpy(value->X3D_SFString.strptr,tstring, strlen(tstring) + 1);
++			memcpy(value->X3D_SFString.strptr,tstring, strlen(tstring) + 1);
+ 			value->X3D_SFString.len = strlen(tstring);
+ 			
+ 			break;
+@@ -543,7 +543,7 @@ X3DNode* X3D_getValue (X3DEventOut *src)
+ 					if( start && stop )
+ 					{
+ 						len = stop-start+1;
+-						strncpy(tstring,&temp[start],len);
++						memcpy(tstring,&temp[start],len);
+ 						tstring[len] = '\0';
+ 						strcat(ttok, tstring);
+ 						strcat(ttok, "\r"); /*good delimeter needed for loop below - vrml doesn't allow \r within ""? or other like ~ */
+@@ -562,7 +562,7 @@ X3DNode* X3D_getValue (X3DEventOut *src)
+ 			if (temp != NULL) {
+ 				value->X3D_MFString.p[0].len = strlen(temp);
+ 				value->X3D_MFString.p[0].strptr = malloc(sizeof(char)*(STRLEN));
+-				strncpy(value->X3D_MFString.p[0].strptr, temp, STRLEN);
++				memcpy(value->X3D_MFString.p[0].strptr, temp, STRLEN);
+ 			/* changes from Doug Sanden */
+ 				value->X3D_MFString.p[0].type = FIELDTYPE_SFString;
+ 			}
+@@ -572,7 +572,7 @@ X3DNode* X3D_getValue (X3DEventOut *src)
+ 				temp = strtok(NULL, "\r");
+ 				value->X3D_MFString.p[i].len = strlen(temp);
+ 				value->X3D_MFString.p[i].strptr = malloc(STRLEN);
+-				strncpy(value->X3D_MFString.p[i].strptr, temp, STRLEN);
++				memcpy(value->X3D_MFString.p[i].strptr, temp, STRLEN);
+ 
+ 				/* changes from Doug Sanden */
+ 				value->X3D_MFString.p[i].type = FIELDTYPE_SFString;
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/input/EAI_C_CommonFunctions.c.strncpy freewrl-4.3.0-20190827git36b721c/src/lib/input/EAI_C_CommonFunctions.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/input/EAI_C_CommonFunctions.c.strncpy	2020-01-13 10:27:36.111363503 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/input/EAI_C_CommonFunctions.c	2020-01-13 10:27:51.775133742 -0500
+@@ -100,7 +100,7 @@ struct Uni_String *newASCIIString(const
+ 	len = (int) strlen(str);
+ 
+ 	retval->strptr  = MALLOC (char *, sizeof(char) * len+1);
+-	strncpy(retval->strptr,str,len+1);
++	memcpy(retval->strptr,str,len+1);
+ 	retval->len = len+1;
+ 	retval->touched = 1; /* make it 1, to signal that this is a NEW string. */
+ 
+@@ -167,7 +167,7 @@ void verify_Uni_String(struct  Uni_Strin
+ 			os = unis->strptr;
+ 			len = strlen(str);
+ 			ns = MALLOC (char *,len+1);
+-			strncpy(ns,str,len+1);
++			memcpy(ns,str,len+1);
+ 			unis->strptr = ns;
+ 			FREE_IF_NZ (os);
+ 			unis->touched++;
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/main/ConsoleMessage.c.strncpy freewrl-4.3.0-20190827git36b721c/src/lib/main/ConsoleMessage.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/main/ConsoleMessage.c.strncpy	2020-01-13 10:20:09.823909805 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/main/ConsoleMessage.c	2020-01-13 10:23:41.441805715 -0500
+@@ -429,7 +429,7 @@ int fwvsnprintf(char *buffer, int buffer
+ 						int ltc;
+ 						ltc = (int)strlen(s);
+ 						if (ltc > 80) ltc = 80;
+-						strncpy(tmpstr, s, ltc);
++						memcpy(tmpstr, s, ltc);
+ 						tmpstr[ltc] = '.'; ltc++;
+ 						tmpstr[ltc] = '.'; ltc++;
+ 						tmpstr[ltc] = '.'; ltc++;
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Text.c.strncpy freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Text.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Text.c.strncpy	2020-01-13 10:26:17.565515637 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Text.c	2020-01-13 10:27:00.695882993 -0500
+@@ -827,7 +827,7 @@ void FW_make_fontname(int num) {
+            } else {
+               // printf("<debug> setting p->thisfontname to %s\n", FW_file);
+ 	      /* strcpy didn't work, use strncpy and set the null character by hand */
+-              strncpy(p->thisfontname,(char *)FW_file,strlen((char *)FW_file));
++              memcpy(p->thisfontname,(char *)FW_file,strlen((char *)FW_file));
+               p->thisfontname[strlen((char *)FW_file)] = '\0';
+               break;
+            }
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c.strncpy freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c.strncpy	2020-01-13 10:24:17.578275654 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c	2020-01-13 10:24:52.870757973 -0500
+@@ -949,7 +949,7 @@ static BOOL parser_interfaceDeclaration(
+ 				pdecl->fieldString = MALLOC (char *, sz + 2);
+ 				if (NULL != pdecl->fieldString)
+ 				{
+-				strncpy(pdecl->fieldString,startOfField,sz);
++				memcpy(pdecl->fieldString,startOfField,sz);
+ 				pdecl->fieldString[sz]='\0';
+ 				}
+ 			} else {
+@@ -1011,13 +1011,13 @@ static BOOL parser_interfaceDeclaration(
+ 				/* and, the intermediate layers... */
+ 				for (i=startOfFieldLexerLevel+1; i<me->lexer->lexerInputLevel; i++) {
+ 					sz = (size_t) (me->lexer->oldNextIn[i+1] - me->lexer->startOfStringPtr[i]);
+-					strncpy(curStrPtr,me->lexer->startOfStringPtr[i],sz);
++					memcpy(curStrPtr,me->lexer->startOfStringPtr[i],sz);
+ 					curStrPtr += sz;
+ 				}
+ 
+ 				/* and the final level */
+ 				sz = (size_t)(me->lexer->nextIn - me->lexer->startOfStringPtr[me->lexer->lexerInputLevel]);
+-				strncpy(curStrPtr,me->lexer->startOfStringPtr[me->lexer->lexerInputLevel],sz);
++				memcpy(curStrPtr,me->lexer->startOfStringPtr[me->lexer->lexerInputLevel],sz);
+ 				curStrPtr += sz;
+ 
+ 				/* trailing null */
+@@ -1801,7 +1801,7 @@ void addUnits(void *ecx, char *category,
+ 			uc = &uncas[iuc];
+ 			memcpy(&u2,uc,sizeof(struct unca));
+ 			memset(&u2.uname,0,20);
+-			strncpy(&u2.uname[0],uc->uname,min(39,strlen(uc->uname)+1));
++			memcpy(&u2.uname[0],uc->uname,min(39,strlen(uc->uname)+1));
+ 			vector_pushBack(struct unitsB,units2vec,u2);
+ 			iuc++;
+ 		}while(uncas[iuc].catname);
+@@ -1812,7 +1812,7 @@ void addUnits(void *ecx, char *category,
+ 		if(!strcasecmp(uptr->catname,category)){
+ 			//copy in new unit and factor, and set changed flag
+ 			if(uptr->derived & UNCA_BASE){
+-				strncpy(&uptr->uname[0],unit,min(39,strlen(unit)+1));
++				memcpy(&uptr->uname[0],unit,min(39,strlen(unit)+1));
+ 				uptr->factor = factor;
+ 				uptr->ichanged = TRUE;
+ 				if(uptr->iunca == UNCA_LENGTH) {
+@@ -2886,7 +2886,7 @@ void cParseErrorCurID(struct VRMLParser
+ 	ppCParseParser p = (ppCParseParser)gglobal()->CParseParser.prv;
+ 
+ 	if (strlen(str) > FROMSRC) { //str[FROMSRC] = '\0';
+-		strncpy(fw_outline,str,FROMSRC);
++		memcpy(fw_outline,str,FROMSRC);
+ 		fw_outline[FROMSRC-1] = '\0';
+ 	}else{
+ 		strcpy(fw_outline,str);
+@@ -6111,7 +6111,7 @@ int getFieldFromNodeAndNameU(struct X3D_
+ 		if(hcn) {
+ 			//_changed suffix
+ 			char rootname[MAXJSVARIABLELENGTH];
+-			strncpy(rootname,fieldname,ln);
++			memcpy(rootname,fieldname,ln);
+ 			rootname[ln] = '\0';
+ 			ifound = getFieldFromNodeAndName0(node,rootname,type,kind,iifield,builtIn,value,iunca,cname);
+ 		}

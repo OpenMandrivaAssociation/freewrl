@@ -1,0 +1,190 @@
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/DIS/DIS.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/DIS/DIS.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/DIS/DIS.c.signfix	2020-01-13 11:32:57.511723900 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/DIS/DIS.c	2020-01-13 11:36:36.347479726 -0500
+@@ -1650,14 +1650,14 @@ void initializeclass(unsigned char *t, i
+     field = DIS_CLASS[distype].fields;
+     do{
+         //initialize field
+-        initialize_field(t+field->offset,field);
++        initialize_field((char *)t+field->offset,field);
+         field++;
+     } while(field->kind > -1);
+ }
+ void initialize_field(char *t,struct disfieldattr* field){
+     switch(field->kind){
+         case CLASSREF:
+-            initializeclass(t,field->type);
++            initializeclass((unsigned char *)t,field->type);
+             break;
+         case PRIMITIVE:
+            switch(field->type){
+@@ -1806,7 +1806,7 @@ unsigned char *dis_marshal_list_item(uns
+            if(unde) printf("/classref\n");
+            break; 
+        case PRIMITIVE: 
+-           endianswap(carat,item, size); 
++           endianswap((char *)carat,(char *)item, size); 
+            if(unde) printf("doing primitive size %d\n",size*8);
+            carat += size; //size in bytes 
+            break; 
+@@ -1833,7 +1833,7 @@ unsigned char * dis_marshal(unsigned cha
+                 carat = dis_marshal(carat,item + field->offset, field->type); 
+                 break; 
+             case PRIMITIVE: 
+-                endianswap(carat,item + field->offset,field->size); 
++                endianswap((char *)carat, (char *)item + field->offset,field->size); 
+                 carat += field->size; //size in bytes  
+                 break; 
+             case FIXED_LIST: 
+@@ -1877,7 +1877,7 @@ unsigned char *dis_unmarshal_list_item(u
+             if(unde) printf("/classref\n");
+             break; 
+         case PRIMITIVE: 
+-            endianswap(item,carat, size); 
++            endianswap((char *)item, (char *)carat, size); 
+             if(unde) printf("doing primitive size %d\n",size*8);
+             carat += size; //size in bytes 
+             break; 
+@@ -1905,7 +1905,7 @@ unsigned char *dis_unmarshal(unsigned ch
+                 if(unde) printf("/classref\n");
+                 break; 
+             case PRIMITIVE: 
+-                endianswap(item + field->offset,carat, field->size); 
++                endianswap((char *)item + field->offset,(char *)carat, field->size); 
+                 if(unde) printf("doing %s primitive size %d\n",field->name,field->size*8);
+                 carat += field->size; //size in bytes 
+                 break; 
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/io_files.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/io_files.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/io_files.c.signfix	2020-01-13 09:02:18.000000000 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/io_files.c	2020-01-13 11:19:24.387714775 -0500
+@@ -624,7 +624,7 @@ int determineFileType(const char *buffer
+ 	}
+ 
+     #if defined (INCLUDE_STL_FILES)
+-	return stlDTFT(buffer,len);
++	return stlDTFT((const unsigned char*)buffer,len);
+     #endif //INCLUDE_STL_FILES
+     
+ 	return IS_TYPE_UNKNOWN;
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c.signfix	2020-01-13 11:19:24.382714849 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c	2020-01-13 11:27:06.447907233 -0500
+@@ -797,7 +797,7 @@ void captiontext_setString(void *_self,
+ 	}
+ 	strcpy(self->caption,utf8string);
+ 	self->len = lenstr;
+-	self->utf32 = utf8_to_utf32(self->caption,self->utf32,&self->len32);
++	self->utf32 = (int *)utf8_to_utf32((unsigned char *)self->caption,(unsigned int *)self->utf32,(unsigned int *)&self->len32);
+ }
+ 
+ 
+@@ -1151,11 +1151,11 @@ void textpanel_render_blobmethod(content
+ 			jrow++;
+ 			if(jrow >  panelsizechars.Y) //would be rendered off-panel
+ 				break;
+-			row = &P[-nchars + i0];
++			row = (char *)&P[-nchars + i0];
+ 			if(hasTU && Trow == i){
+ 				l0 = T - &A[i0];
+ 				l1 = lenrow - l0;
+-				row = self->row;
++				row = (char *)self->row;
+ 				memcpy(&row[l0],U,l1);
+ 				memcpy(row,&A[i0],l0);
+ 				P = &self->E[bchars];
+@@ -1371,7 +1371,7 @@ int multitouch_pick(void *_self, int mev
+ 		//record for rendering
+ 		ihandle = 0;
+ 		if(fwl_get_emulate_multitouch()){
+-			ihandle = emulate_multitouch2(self->touchlist,self->ntouch,&self->IDD,&self->lastbut,&mev,&butnum,mouseX,mouseY,&ID,windex);
++			ihandle = emulate_multitouch2(self->touchlist,self->ntouch,&self->IDD,&self->lastbut,&mev,(unsigned int *)&butnum,mouseX,mouseY,(int *)&ID,windex);
+ 			iret = ihandle < 0 ? 0 : 1;
+ 		}
+ 		if(iret == 0){
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c.signfix	2020-01-13 11:21:42.339682323 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c	2020-01-13 11:22:27.411018289 -0500
+@@ -421,7 +421,7 @@ static bool parser_do_parse_string(const
+             break;
+         }
+         case IS_TYPE_BINARY_STL: {
+-            char *newData = convertBinarySTL(input);
++            char *newData = convertBinarySTL((const unsigned char *)input);
+             p->lastSTLScaling = getLastSTLScale();
+ 
+             ret = cParse (ectx,nRn,(int) offsetof (struct X3D_Group, children), newData);
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c.signfix	2020-01-13 11:31:24.858097454 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c	2020-01-13 11:32:47.153877453 -0500
+@@ -383,7 +383,7 @@ void compute_3D_alpha_gradient_store_rgb
+ 		tti2->x = x;
+ 		tti2->y = y;
+ 		tti2->z = z;
+-		tti2->texdata = dest;
++		tti2->texdata = (unsigned char *)dest;
+ 		tti2->channels = 3;
+ 		saveImage_web3dit(tti2,"gradientRGB.web3dit");
+ 		tti2->channels = 4;
+@@ -1925,7 +1925,7 @@ void move_texture_to_opengl(textureTable
+ 						//and hope that the one info channel is alpha because we overwrite rgb
+ 						if(me->channels == 1){
+ 							//alpha only scalar image, RGB are free to hold gradient
+-							compute_3D_alpha_gradient_store_rgb(dest,x,y,z);
++							compute_3D_alpha_gradient_store_rgb((char *)dest,x,y,z);
+ 						}
+ 
+ 						ny = (int) sqrt(z+1);
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c.signfix	2020-01-13 11:27:22.352672905 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c	2020-01-13 11:29:21.620915720 -0500
+@@ -2390,7 +2390,7 @@ void dis_sendloop(){
+ 				nbytes += nb;
+ 				reset_node_pduchanged(node);
+ 			}
+-			if(nbytes) socksendto(dsock,buf2,nbytes);
++			if(nbytes) socksendto(dsock,(const char *)buf2,nbytes);
+ 		}
+ 	}
+ }
+@@ -2816,7 +2816,7 @@ int dis_write_stream(unsigned char * dat
+ 			carat = dis_marshal(carat,(unsigned char*)pdu,distype);
+ 			//printf("pdu %d wrote %d bytes\n",i,nbytes);
+ 		}
+-		//*streamsize = nbytes;
++		// *streamsize = nbytes;
+ 		nbytes = (int)(carat - datastream);
+ 	}
+ 	return nbytes;
+@@ -2863,7 +2863,7 @@ void dis_recvloop(){
+ 					dis_dtor((unsigned char *)pdu,pduToDis(pdu->pduType));
+ 				}
+ 				pdus->n = 0;
+-				dis_read_stream(buf,nbytes,pdus,&heard);
++				dis_read_stream((unsigned char *)buf,nbytes,pdus,&heard);
+ 				//print some stuff to the console, to prove we got a state update
+ 				//printf("hallelluha %d\n",count++);
+ 				//check pdus against all nodes registered on the port
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Sound.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Sound.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Sound.c.signfix	2020-01-13 11:29:33.635738703 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Sound.c	2020-01-13 11:31:08.961333121 -0500
+@@ -624,7 +624,7 @@ void render_Sound (struct X3D_Sound *nod
+ 					//convert buffer to openAL sound source
+ 					ALint source;
+ 					source = 0;
+-					alGenSources(1, &source);
++					alGenSources(1, (ALuint *)&source);
+ 					alSourcei(source, AL_BUFFER, acp->__sourceNumber);
+ 					alSourcef (source, AL_PITCH,    acp->pitch);
+ 					alSourcef (source, AL_GAIN,     node->intensity );
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/socketutils.c.signfix freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/socketutils.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/socketutils.c.signfix	2020-01-13 09:02:18.000000000 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/socketutils.c	2020-01-13 11:19:24.388714760 -0500
+@@ -164,7 +164,7 @@ int sockrecvfrom(struct dis_socket *dsoc
+         int status, fromlen;
+         fromlen = sizeof(struct sockaddr);
+         status = recvfrom(dsock->socket, buf, len, 0, 
+-                     (struct sockaddr *)&dsock->saddr, &fromlen );
++                     (struct sockaddr *)&dsock->saddr, (socklen_t *)&fromlen );
+         // I think -1 is normal for non-blocking when no data
+         // if(status < 0) print_socket_error("recvfrom ",status);
+         return status;

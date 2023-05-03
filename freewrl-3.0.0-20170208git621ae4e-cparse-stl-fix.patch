@@ -1,0 +1,21 @@
+diff -up freewrl-3.0.0-20170208git621ae4e/src/lib/main/ProdCon.c.cparsestlfix freewrl-3.0.0-20170208git621ae4e/src/lib/main/ProdCon.c
+--- freewrl-3.0.0-20170208git621ae4e/src/lib/main/ProdCon.c.cparsestlfix	2017-02-08 11:10:11.646192107 -0500
++++ freewrl-3.0.0-20170208git621ae4e/src/lib/main/ProdCon.c	2017-02-08 11:10:43.029510276 -0500
+@@ -416,7 +416,7 @@ static bool parser_do_parse_string(const
+ 
+             //ConsoleMessage("IS_TYPE_ASCII_STL, now file is :%s:",newData);
+ 
+-            ret = cParse (nRn,(int) offsetof (struct X3D_Group, children), newData);
++            ret = cParse (ectx,nRn,(int) offsetof (struct X3D_Group, children), newData);
+             FREE_IF_NZ(newData);
+             break;
+         }
+@@ -424,7 +424,7 @@ static bool parser_do_parse_string(const
+             char *newData = convertBinarySTL(input);
+             p->lastSTLScaling = getLastSTLScale();
+ 
+-            ret = cParse (nRn,(int) offsetof (struct X3D_Group, children), newData);
++            ret = cParse (ectx,nRn,(int) offsetof (struct X3D_Group, children), newData);
+             FREE_IF_NZ(newData);
+             break;
+         }

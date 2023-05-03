@@ -1,0 +1,59 @@
+--- a/src/lib/scenegraph/MPEG_Utils_ffmpeg.c
++++ b/src/lib/scenegraph/MPEG_Utils_ffmpeg.c
+@@ -28,6 +28,7 @@
+ //#include "libswresample/swresample.h"
+ //#include "libavutil/opt.h"
+ //#include "libavcodec/avfft.h"
++#include "libavcodec/avcodec.h"
+ 
+ //we don't support libav variant, which has libavresample 
+ // ... (ubuntu 1404LTS has libav, can get ffmpeg on 1606)
+@@ -132,7 +132,7 @@ int movie_load_from_file(char *fname, vo
+ 	*opaque = NULL;
+ 	//initialize ffmpeg libs once per process
+ 	if(once == 0){
+-		av_register_all(); //register all codecs - will filter in the future for patent non-expiry
++//		av_register_all(); //register all codecs - will filter in the future for patent non-expiry
+ 		once = 1;
+ 	}
+ 	pFormatCtx = NULL;
+@@ -156,10 +156,10 @@ int movie_load_from_file(char *fname, vo
+ 	videoStream=-1;
+ 	audioStream=-1;
+ 	for(i=0; i<pFormatCtx->nb_streams; i++){
+-		if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_VIDEO && videoStream < 0) {
++		if(pFormatCtx->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_VIDEO && videoStream < 0) {
+ 			videoStream=i;
+ 		}
+-		if(pFormatCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO && audioStream < 0) {
++		if(pFormatCtx->streams[i]->codecpar->codec_type==AVMEDIA_TYPE_AUDIO && audioStream < 0) {
+ 			audioStream=i;
+ 		}
+ 	}
+@@ -193,7 +193,7 @@ int movie_load_from_file(char *fname, vo
+ 	//audio prep
+ 	if(audioStream > -1){
+ 
+-		aCodecCtxOrig=pFormatCtx->streams[audioStream]->codec;
++		aCodecCtxOrig=pFormatCtx->streams[audioStream]->codecpar;
+ 		aCodec = avcodec_find_decoder(aCodecCtxOrig->codec_id);
+ 		if(!aCodec) {
+ 			fprintf(stderr, "Unsupported codec!\n");
+@@ -297,7 +297,7 @@ int movie_load_from_file(char *fname, vo
+ 		int av_pix_fmt;
+ 
+ 		// Get a pointer to the codec context for the video stream
+-		pCodecCtxOrig = pFormatCtx->streams[videoStream]->codec;
++		pCodecCtxOrig = pFormatCtx->streams[videoStream]->codecpar;
+ 
+ 
+ 		// Find the decoder for the video stream
+@@ -613,4 +614,4 @@ void movie_free(void *opaque){
+ 	}
+ }
+ 
+-#endif //MOVIETEXTURE_FFMPEG
+\ No newline at end of file
++#endif //MOVIETEXTURE_FFMPEG
+
+

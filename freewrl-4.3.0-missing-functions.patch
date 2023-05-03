@@ -1,0 +1,13 @@
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/input/convertSTL.h.missing-functions freewrl-4.3.0-20190827git36b721c/src/lib/input/convertSTL.h
+--- freewrl-4.3.0-20190827git36b721c/src/lib/input/convertSTL.h.missing-functions	2020-01-13 10:34:29.718296581 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/input/convertSTL.h	2020-01-13 10:35:04.859781107 -0500
+@@ -26,7 +26,7 @@ void analyzeSTLdata(struct Vector* verti
+ float fwl_getLastSTLScaling(void);
+ float getLastSTLScale(void);
+ void fwl_stl_set_rendering_type(int nv);
+-    
+-
++char *convertAsciiSTL (const char *inp);
++char *convertBinarySTL (const unsigned char *buffer);
+ 
+ #endif //INCLUDE_STL_FILES

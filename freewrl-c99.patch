@@ -1,0 +1,118 @@
+Add additional #include directives in prototypes to avoid implicit
+function declarations and build failures with future compilers.
+
+Add a missing mode argument for the mkdir function call in
+fwl_set_testPath, a bug revealed by the newly included header files.
+
+Submitted upstream:
+
+  <https://sourceforge.net/p/freewrl/mailman/message/37781108/>
+
+diff --git a/src/bin/options.c b/src/bin/options.c
+index c952367284581679..e29915f33c3a0cec 100644
+--- a/src/bin/options.c
++++ b/src/bin/options.c
+@@ -34,6 +34,7 @@
+ 
+ #include "main.h"
+ #include "options.h"
++#include "../sound/internal.h"
+ 
+ #if HAVE_GETOPT_H
+ #include <getopt.h>
+diff --git a/src/lib/main.c b/src/lib/main.c
+index 1a684cbcccd9e720..c2e9a48c3989596e 100644
+--- a/src/lib/main.c
++++ b/src/lib/main.c
+@@ -43,6 +43,7 @@
+ #include "input/InputFunctions.h"
+ 
+ #include "ui/common.h"
++#include "main.h"
+ 
+ char consoleBuffer[200];
+ 
+diff --git a/src/lib/main.h b/src/lib/main.h
+index cbcdf19526726053..acd6ad854cca8da2 100644
+--- a/src/lib/main.h
++++ b/src/lib/main.h
+@@ -28,4 +28,6 @@
+ #ifndef __LIBFREEWRL_SRC_MAIN_H__
+ #define __LIBFREEWRL_SRC_MAIN_H__
+ 
++void splitpath_local_suffix(const char *url, char **local_name, char **suff);
++
+ #endif /* __LIBFREEWRL_SRC_MAIN_H__ */
+diff --git a/src/lib/main/MainLoop.h b/src/lib/main/MainLoop.h
+index 083118f3a54221d3..8b2edecb483643ac 100644
+--- a/src/lib/main/MainLoop.h
++++ b/src/lib/main/MainLoop.h
+@@ -38,4 +38,6 @@ void fwl_replaceWorldNeededRes(resource_item_t *multiResWithParent);
+ 
+ void fwl_gotoCurrentViewPoint();
+ 
++char *nameLogFileFolderNORMAL(char *logfilename, int size);
++
+ #endif /* __FREEWRL_MAINLOOP_MAIN_H__ */
+diff --git a/src/lib/main/SnapshotTesting.c b/src/lib/main/SnapshotTesting.c
+index 4fefd9f018ed2449..76c82a5b33da15d4 100644
+--- a/src/lib/main/SnapshotTesting.c
++++ b/src/lib/main/SnapshotTesting.c
+@@ -17,6 +17,11 @@
+     along with FreeWRL/FreeX3D.  If not, see <http://www.gnu.org/licenses/>.
+ ****************************************************************************/
+ 
++#include <internal.h>
++#include "MainLoop.h"
++#include "../main.h"
++#include "../scenegraph/Viewer.h"
++
+ //#define USE_SNAPSHOT_TESTING 1
+ #ifndef USE_SNAPSHOT_TESTING
+ //stubs for options
+@@ -383,7 +388,7 @@ void fwl_set_testPath(char *testPath)
+ 	ierr = chdir(p->testPath);
+ 	if (ierr == -1) {
+ 		//folder may not exist yet. Try and create it.
+-		mkdir(p->testPath);
++		mkdir(p->testPath, 0755);
+ 		ierr = chdir(p->testPath);
+ 	}
+ 	if (1) {
+diff --git a/src/lib/scenegraph/Component_Shape.h b/src/lib/scenegraph/Component_Shape.h
+index 83c64bd504a4d04c..fcd231e9eac7ad46 100644
+--- a/src/lib/scenegraph/Component_Shape.h
++++ b/src/lib/scenegraph/Component_Shape.h
+@@ -67,6 +67,8 @@ int volume;
+ } shaderflagsstruct;
+ 
+ shaderflagsstruct getShaderFlags();
++void popShaderFlags(void);
++void pushShaderFlags(shaderflagsstruct);
+ s_shader_capabilities_t *getMyShaders(shaderflagsstruct);
+ 
+ 
+diff --git a/src/lib/scenegraph/Viewer.h b/src/lib/scenegraph/Viewer.h
+index d504fce1565283a4..af087262a95df23c 100644
+--- a/src/lib/scenegraph/Viewer.h
++++ b/src/lib/scenegraph/Viewer.h
+@@ -312,4 +312,6 @@ void setAnaglyphPrimarySide(int primary, int iside);
+ int viewer_getKeyChord();
+ void viewer_setKeyChord(int chord);
+ 
++void handle0(const int mev, const unsigned int button, const float x, const float yup);
++
+ #endif /* __FREEWRL_VIEWER_H__ */
+diff --git a/src/sound/internal.h b/src/sound/internal.h
+index f27591fc1880ca81..e8ab5ceea733ce82 100644
+--- a/src/sound/internal.h
++++ b/src/sound/internal.h
+@@ -113,4 +113,8 @@ void *freewrlStrdup(int line, char *file, char *str);
+                          }
+ 
+ 
++void fwl_set_modeRecord(void);
++void fwl_set_modeFixture(void);
++void fwl_set_modePlayback(void);
++
+ #endif /* __FREEWRL_SND_INTERNAL_H__ */

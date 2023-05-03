@@ -1,0 +1,291 @@
+diff -up freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Advise.c.fixindent freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Advise.c
+--- freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Advise.c.fixindent	2020-01-13 11:02:24.589728973 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/libeai/EAI_C_Advise.c	2020-01-13 11:03:01.444188376 -0500
+@@ -95,11 +95,13 @@ void _handleFreeWRLcallback (char *line)
+ 		sscanf (line, "%lf",&evTime);
+ 
+ 		/* get the event number */
+-		while (!iscntrl(*line)) line++; while (iscntrl(*line)) line++;
++		while (!iscntrl(*line)) line++;
++		while (iscntrl(*line)) line++;
+ 		sscanf (line,"%d",&evIndex);
+ 
+ 		/* get to the data */
+-		while (!iscntrl(*line)) line++; while (iscntrl(*line)) line++;
++		while (!iscntrl(*line)) line++;
++		while (iscntrl(*line)) line++;
+ 
+ 		#ifdef VERBOSE
+ 		printf ("event time %lf index %d data :%s:\n",evTime, evIndex, line);
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/input/EAIEventsIn.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/input/EAIEventsIn.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/input/EAIEventsIn.c.fixindent	2020-01-13 10:58:08.640483334 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/input/EAIEventsIn.c	2020-01-13 10:59:55.025922830 -0500
+@@ -1248,7 +1248,8 @@ static void handleRoute (char command, c
+         x = fieldTemp; ftlen = 0;
+ 
+ 	/* skip to the beginning of the field name */
+-        while (*bufptr != ' ') bufptr++; while (*bufptr == ' ') bufptr++;
++        while (*bufptr != ' ') bufptr++;
++	while (*bufptr == ' ') bufptr++;
+ 
+ 	/* copy the field over */
+         while ((*bufptr > ' ') && (ftlen <1000)) { *x = *bufptr;      x++; bufptr++; ftlen++;}
+@@ -1259,7 +1260,8 @@ static void handleRoute (char command, c
+ 
+ 
+ 	/* skip past the first field, to get ready for the next one */
+-	while (*bufptr != ' ') bufptr++; while (*bufptr == ' ') bufptr++;
++	while (*bufptr != ' ') bufptr++;
++	while (*bufptr == ' ') bufptr++;
+ 
+ 	/* ------- now, the route to section -------- */
+ 	/* get the to Node */
+@@ -1270,7 +1272,8 @@ static void handleRoute (char command, c
+         x = fieldTemp; ftlen = 0;
+ 
+ 	/* skip to the beginning of the field name */
+-        while (*bufptr != ' ') bufptr++; while (*bufptr == ' ') bufptr++;
++        while (*bufptr != ' ') bufptr++;
++	while (*bufptr == ' ') bufptr++;
+ 
+ 	/* copy the field over */
+         while ((*bufptr > ' ') && (ftlen <1000)) { *x = *bufptr;      x++; bufptr++; ftlen++;}
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c.fixindent	2020-01-13 10:44:22.491601555 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/main/MainLoop.c	2020-01-13 10:45:00.769040098 -0500
+@@ -2246,26 +2246,26 @@ contenttype *new_contenttype_stagefbo(in
+ 	if ( !haveFrameBufferObject() ) // GLEW_ARB_framebuffer_object 
+ 		return _self;
+ 	
+-		glGenTextures(1, &self->itexturebuffer);
+-		//bind to set some parameters
+-		glBindTexture(GL_TEXTURE_2D, self->itexturebuffer);
+-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+-		useMip = 0;
+-		if(useMip){
+-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+-			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
+-		}else{
+-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+-		}
+-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self->ivport.W, self->ivport.H, 0, GL_RGBA , GL_UNSIGNED_BYTE, 0);
+-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+-		//unbind - will rebind during render to reset width, height as needed
+-		glBindTexture(GL_TEXTURE_2D, 0); 
++	glGenTextures(1, &self->itexturebuffer);
++	//bind to set some parameters
++	glBindTexture(GL_TEXTURE_2D, self->itexturebuffer);
++	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
++	useMip = 0;
++	if(useMip){
++		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
++		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); // automatic mipmap generation included in OpenGL v1.4
++	}else{
++		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
++	}
++	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
++	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
++	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, self->ivport.W, self->ivport.H, 0, GL_RGBA , GL_UNSIGNED_BYTE, 0);
++	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
++	//unbind - will rebind during render to reset width, height as needed
++	glBindTexture(GL_TEXTURE_2D, 0); 
+ 
+ 	glGenFramebuffers(1, &self->ibuffer);
+-		glBindFramebuffer(GL_FRAMEBUFFER, self->ibuffer);
++	glBindFramebuffer(GL_FRAMEBUFFER, self->ibuffer);
+ 
+ 	// create a renderbuffer object to store depth info
+ 	// NOTE: A depth renderable image should be attached the FBO for depth test.
+@@ -2274,11 +2274,11 @@ contenttype *new_contenttype_stagefbo(in
+ 	// If you also need stencil test for your rendering, then you must
+ 	// attach additional image to the stencil attachement point, too.
+ 	glGenRenderbuffers(1, &self->idepthbuffer);
+-		//bind to set some parameters
+-		glBindRenderbuffer(GL_RENDERBUFFER, self->idepthbuffer);
+-		glRenderbufferStorage(GL_RENDERBUFFER, FW_GL_DEPTH_COMPONENT, self->ivport.W, self->ivport.H);
+-		//unbind
+-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
++	//bind to set some parameters
++	glBindRenderbuffer(GL_RENDERBUFFER, self->idepthbuffer);
++	glRenderbufferStorage(GL_RENDERBUFFER, FW_GL_DEPTH_COMPONENT, self->ivport.W, self->ivport.H);
++	//unbind
++	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+ 
+ 	// attach a texture to FBO color attachement point
+ 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, self->itexturebuffer, 0);
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c.fixindent	2020-01-13 10:45:50.138315932 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/main/ProdCon.c	2020-01-13 10:47:27.280891020 -0500
+@@ -682,8 +682,8 @@ bool parser_process_res_VRML_X3D(resourc
+ 	int offsetInNode;
+ 	int shouldBind;
+ 	//int shouldUnBind;
+-    int parsedOk = FALSE; // results from parser
+-    bool fromEAI_SAI = FALSE;
++	int parsedOk = FALSE; // results from parser
++	bool fromEAI_SAI = FALSE;
+ 	/* we only bind to new nodes, if we are adding via Inlines, etc */
+ 	//int origFogNodes, origBackgroundNodes, origNavigationNodes, origViewpointNodes;
+ 	struct X3D_Node *oldFogBindInRender, *oldBackgroundBindInRender, *oldNavigationBindInRender, *oldViewpointBindInRender;
+@@ -696,7 +696,7 @@ bool parser_process_res_VRML_X3D(resourc
+ 
+ 	UNUSED(parsedOk); // compiler warning mitigation
+ 
+-    //printf ("entering parser_process_res_VRML_X3D\n");
++	//printf ("entering parser_process_res_VRML_X3D\n");
+ 	//fwl_lockTestMutex();
+ 
+ 	/* printf("processing VRML/X3D resource: %s\n", res->URLrequest);  */
+@@ -720,11 +720,11 @@ bool parser_process_res_VRML_X3D(resourc
+ 
+     //ConsoleMessage ("parser_process_res_VRML_X3D, url %s",res->parsed_request);
+ 	/* save the current URL so that any local-url gets are relative to this */
+-    if (res->parsed_request != NULL)
+-        if (strncmp(res->parsed_request,EAI_Flag,strlen(EAI_Flag)) == 0) {
+-            //ConsoleMessage("parser_process_res_VRML_X3D, from EAI, ignoring");
+-            fromEAI_SAI = TRUE;
+-        }
++	if (res->parsed_request != NULL)
++        	if (strncmp(res->parsed_request,EAI_Flag,strlen(EAI_Flag)) == 0) {
++			//ConsoleMessage("parser_process_res_VRML_X3D, from EAI, ignoring");
++			fromEAI_SAI = TRUE;
++        	}
+ 
+ 	if (!fromEAI_SAI){
+ 		pushInputResource(res);
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c.fixindent	2020-01-13 11:00:10.331698315 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/opengl/Textures.c	2020-01-13 11:00:56.290024184 -0500
+@@ -1536,7 +1536,8 @@ void move_texture_to_opengl(textureTable
+ 			}
+ 
+ 			borderWidth = tpNode->borderWidth;
+-			if (borderWidth < 0) borderWidth=0; if (borderWidth>1) borderWidth = 1;
++			if (borderWidth < 0) borderWidth=0;
++			if (borderWidth>1) borderWidth = 1;
+ 
+ 			// http://www.web3d.org/documents/specifications/19775-1/V3.3/Part01/components/texturing.html#t-TextureMagnificationModes
+ 
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c.fixindent	2020-01-13 10:53:19.506724465 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_DIS.c	2020-01-13 10:56:40.828771394 -0500
+@@ -3657,24 +3657,48 @@ void compile_EspduTransform0(struct X3D_
+ 			n = node->articulationParameterArray.n;
+ 			for(i=0;i<8;i++){
+ 				switch(i){
+-					case 0: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue0) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue0; n=max(n,i); break;
+-					case 1: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue1) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue1; n=max(n,i); break;
+-					case 2: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue2) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue2; n=max(n,i); break;
+-					case 3: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue3) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue3; n=max(n,i); break;
+-					case 4: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue4) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue4; n=max(n,i); break;
+-					case 5: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue5) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue5; n=max(n,i); break;
+-					case 6: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue6) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue6; n=max(n,i); break;
+-					case 7: if(node->set_articulationParameterValue0 != old->set_articulationParameterValue7) 
+-						node->articulationParameterArray.p[i] = node->set_articulationParameterValue7; n=max(n,i); break;
++					case 0:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue0)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue0;
++						n=max(n,i);
++						break;
++					case 1:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue1)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue1;
++						n=max(n,i);
++						break;
++					case 2:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue2)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue2;
++						n=max(n,i);
++						break;
++					case 3:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue3)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue3;
++						n=max(n,i);
++						break;
++					case 4:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue4)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue4;
++						n=max(n,i);
++						break;
++					case 5:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue5)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue5;
++						n=max(n,i);
++						break;
++					case 6:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue6)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue6;
++						n=max(n,i);
++						break;
++					case 7:
++						if(node->set_articulationParameterValue0 != old->set_articulationParameterValue7)
++							node->articulationParameterArray.p[i] = node->set_articulationParameterValue7;
++						n=max(n,i);
++						break;
+ 					default:
+-					break;
++						break;
+ 				}
+ 			}
+ 			node->articulationParameterCount = node->articulationParameterArray.n;
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Geospatial.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Geospatial.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Geospatial.c.fixindent	2020-01-13 10:56:56.122547060 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/scenegraph/Component_Geospatial.c	2020-01-13 10:57:51.850729613 -0500
+@@ -1469,8 +1469,8 @@ static void gccToGdc_fw (Geosys *geoSyst
+                 gdc->c[elevation] = q-rnn;
+             else
+                 gdc->c[elevation] = GCC_Z / s1 + (g->Eps21 * rnn);
+-                gdc->c[latitude] = atan(top / w);
+-                gdc->c[longitude] = atan2(GCC_Y,GCC_X);
++            gdc->c[latitude] = atan(top / w);
++            gdc->c[longitude] = atan2(GCC_Y,GCC_X);
+         }
+               /* POINT ABOVE 50 KILOMETERS OR BELOW -10 KILOMETERS  */
+         else /* Do Exact Solution  ************ */
+diff -up freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c.fixindent freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c
+--- freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c.fixindent	2020-01-13 10:48:29.798973985 -0500
++++ freewrl-4.3.0-20190827git36b721c/src/lib/vrml_parser/CParseParser.c	2020-01-13 10:51:03.459720042 -0500
+@@ -1096,9 +1096,9 @@ static BOOL parser_componentStatement(st
+ 				clevel = &cfullname[i+1];
+ 				break;
+ 			}
+-			myComponent = findFieldInCOMPONENTS(cname);
+-			myLevel = 0;
+-			if(clevel) myLevel = atoi(clevel);
++		myComponent = findFieldInCOMPONENTS(cname);
++		myLevel = 0;
++		if(clevel) myLevel = atoi(clevel);
+ 	}
+     handleComponent(myComponent,myLevel);
+ 
+@@ -3396,14 +3396,14 @@ static BOOL parser_interfaceDeclarationB
+     }
+ 
+     /* Script can not take inputOutputs */
+-   if(0) // change in post-DUK era - we allow inputoutputs now
+-    if (script != NULL) {
+-		if(script->ShaderScriptNode->_nodeType==NODE_Script && mode==PKW_inputOutput)
+-		{
+-			PARSE_ERROR("Scripts must not have inputOutputs!")
+-			//printf("dug9: maybe scripts can have inputOutputs\n");
++    if(0) // change in post-DUK era - we allow inputoutputs now
++		if (script != NULL) {
++			if(script->ShaderScriptNode->_nodeType==NODE_Script && mode==PKW_inputOutput)
++			{
++				PARSE_ERROR("Scripts must not have inputOutputs!")
++				//printf("dug9: maybe scripts can have inputOutputs\n");
++			}
+ 		}
+-    }
+   
+     /* lexer_fieldType is #defined as lexer_specialID(me, r, NULL, FIELDTYPES, FIELDTYPES_COUNT, NULL) */
+     /* Looks for the next token in the array FIELDTYPES and returns the index in type */
