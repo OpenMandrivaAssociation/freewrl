@@ -11,7 +11,7 @@ Version:	%{majorrel}
 Release:	16.%{commitdate}git%{shortcommit}%{?dist}
 Summary:	X3D / VRML visualization program
 License:	LGPLv3+
-URL:		http://freewrl.sourceforge.net
+URL:		https://freewrl.sourceforge.net
 # Source0:	http://sourceforge.net/projects/freewrl/files/freewrl-linux/3.0/%%{name}-%%{version}.tar.bz2
 # git clone 	freewrl-git
 # cd freewrl-git
