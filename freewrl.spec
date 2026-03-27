@@ -8,7 +8,7 @@
 
 Name:		freewrl
 Version:	%{majorrel}
-Release:	17.%{commitdate}git%{shortcommit}%{?dist}
+Release:	17.%{commitdate}git%{shortcommit}%{?dist}1
 Summary:	X3D / VRML visualization program
 License:	LGPLv3+
 URL:		https://freewrl.sourceforge.net
